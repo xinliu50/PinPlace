@@ -15,6 +15,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -55,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements
 //    private FusedLocationProviderClient fusedLocationClient;
     private Location lastLocation;
     private Marker currentUserLocationMarker;
+    private Marker HistoryMarker;
     private static final int Request_User_Location_Code = 99;
 
 
@@ -140,7 +142,7 @@ public class MapsActivity extends FragmentActivity implements
         currentUserLocationMarker = mMap.addMarker(markerOptions);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
 
         if(googleApiClient != null){
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,this);
@@ -159,8 +161,11 @@ public class MapsActivity extends FragmentActivity implements
                     Geocoder geocoder = new Geocoder(this);
                     try {
                         addressList = geocoder.getFromLocationName(address,6);
-
-                        if(addressList != null){
+                        if(!addressList.isEmpty()){
+                            addressFiled.setText("");
+                            if(HistoryMarker != null){
+                                HistoryMarker.remove();
+                            }
                             for(int i = 0; i < addressList.size(); i++){
                                 Address userAddress = addressList.get(i);
                                 LatLng latLng = new LatLng(userAddress.getLatitude(),userAddress.getLongitude());
@@ -169,7 +174,7 @@ public class MapsActivity extends FragmentActivity implements
                                 userMakerOptions.title(address);
                                 userMakerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
-                                mMap.addMarker(userMakerOptions);
+                                HistoryMarker = mMap.addMarker(userMakerOptions);
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                                 mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
                             }
