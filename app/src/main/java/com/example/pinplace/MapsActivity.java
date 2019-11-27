@@ -246,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements
         googleURL.append("&type="+nearbyPlace);
         googleURL.append("&sensor=true");
         googleURL.append("&key=" + SEARCH_API_KEY);
-        
+
         return googleURL.toString();
     }
 
