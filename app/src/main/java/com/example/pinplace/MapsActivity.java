@@ -61,7 +61,7 @@ public class MapsActivity extends FragmentActivity implements
     private double latitude, longitude;
     private int ProximityRadius = 10000;
 
-    String SEARCH_API_KEY = BuildConfig.SearchApiKey;
+    private String SEARCH_API_KEY = BuildConfig.SearchApiKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             checkUserLocationPermission();
         }
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -246,8 +246,7 @@ public class MapsActivity extends FragmentActivity implements
         googleURL.append("&type="+nearbyPlace);
         googleURL.append("&sensor=true");
         googleURL.append("&key=" + SEARCH_API_KEY);
-
-        Log.d("MapsActivity","url = "+googleURL.toString());
+        
         return googleURL.toString();
     }
 
