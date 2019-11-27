@@ -58,7 +58,10 @@ public class MapsActivity extends FragmentActivity implements
     private Marker currentUserLocationMarker;
     private Marker HistoryMarker;
     private static final int Request_User_Location_Code = 99;
+    private double latitude, longitude;
+    private int ProximityRadius = 10000;
 
+    String SEARCH_API_KEY = BuildConfig.SearchApiKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +130,10 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onLocationChanged(Location location) {
+
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+
         lastLocation = location;
         if(currentUserLocationMarker != null){
             currentUserLocationMarker.remove();
@@ -150,6 +157,11 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     public void onClick(View v){
+
+        String hospital = "hospital", school = "school", restaurant = "restaurant";
+        Object transferData[] = new Object[2];
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+
         switch (v.getId()){
             case R.id.search_address:
                 EditText addressFiled = findViewById(R.id.location_search);
@@ -188,7 +200,55 @@ public class MapsActivity extends FragmentActivity implements
                     Toast.makeText(this,"Type in location first Please...",Toast.LENGTH_LONG).show();
                 }
                 break;
+
+            case R.id.hospitals_nearby:
+                mMap.clear();
+                String url = getUrl(latitude,longitude,hospital);
+                transferData[0] = mMap;
+                transferData[1] = url;
+
+                getNearbyPlaces.execute(transferData);
+                Toast.makeText(this,"Searching for Neaby Hospitals... ",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Showing for Neaby Hospitals... ",Toast.LENGTH_SHORT).show();
+
+                break;
+
+            case R.id.schooles_nearby:
+                mMap.clear();
+                url = getUrl(latitude,longitude,school);
+                transferData[0] = mMap;
+                transferData[1] = url;
+
+                getNearbyPlaces.execute(transferData);
+                Toast.makeText(this,"Searching for Neaby Schools... ",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Showing for Neaby Schools... ",Toast.LENGTH_SHORT).show();
+
+                break;
+
+            case R.id.restaurants_nearby:
+                mMap.clear();
+                url = getUrl(latitude,longitude,restaurant);
+                transferData[0] = mMap;
+                transferData[1] = url;
+
+                getNearbyPlaces.execute(transferData);
+                Toast.makeText(this,"Searching for Neaby Restaurants... ",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Showing for Neaby Restaurants... ",Toast.LENGTH_SHORT).show();
+
+                break;
         }
+    }
+
+    private String getUrl(double latitude,double longitude,String nearbyPlace){
+        StringBuilder googleURL = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googleURL.append("location=" + latitude + "," + longitude);
+        googleURL.append("&radius=" + ProximityRadius);
+        googleURL.append("&type="+nearbyPlace);
+        googleURL.append("&sensor=true");
+        googleURL.append("&key=" + SEARCH_API_KEY);
+
+        Log.d("MapsActivity","url = "+googleURL.toString());
+        return googleURL.toString();
     }
 
     @Override
